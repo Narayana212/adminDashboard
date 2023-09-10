@@ -19,7 +19,12 @@ export type Categories = {
   name: string;
 };
 
-export const columns: ColumnDef<Categories>[] = [
+const { categoryDeleteData, setCategoryDeleteData } = useAdminState();
+const { toast } = useToast();
+
+export const columns: ColumnDef<Categories>[] = 
+
+[
   {
     accessorKey: "id",
     header: ({ column }) => {
@@ -46,10 +51,6 @@ export const columns: ColumnDef<Categories>[] = [
     id: "settings",
     cell: ({ row }) => {
       const category = row.original;
-
-      const { categoryDeleteData, setCategoryDeleteData } = useAdminState();
-      const { toast } = useToast();
-
       async function handleDelete(id: string) {
         try {
           const response = await fetch(`api/category/${id}`, {
