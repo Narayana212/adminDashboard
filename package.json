@@ -40,5 +40,19 @@
     "tailwindcss-animate": "^1.0.7",
     "typescript": "5.2.2",
     "zod": "^3.22.2"
-  }
+  }, 
+  "description": "This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).",
+  "main": "next.config.js",
+  "devDependencies": {
+    "@prisma/client": "^5.1.1",
+    "@types/node": "20.4.6",
+    "@types/react": "18.2.18",
+    "i": "^0.3.7",
+    "npm": "^9.8.1",
+    "prisma": "^5.1.1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+  
 }
