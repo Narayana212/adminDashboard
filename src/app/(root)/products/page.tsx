@@ -1,163 +1,99 @@
 "use client";
+
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
+import { DataTable } from "@/components/ui/data-table";
+import Heading from "@/components/ui/heading";
 import { useToast } from "@/components/ui/use-toast";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import { useAdminState } from "@/context/admin-provider";
+import Image from "next/image";
+import Link from "next/link";
 import { FC, useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
+import { number } from "zod";
+import { columns } from "./columns";
+
+
 
 interface ProductsPageProps {}
 
-const FormSchema = z.object({
-  color: z.string(),
-  size: z.string(),
-  category: z.string(),
-  price: z.number().positive("Value must be a positive number"),
-  description:z.string().min(10,"Description must be more than 10 characters").max(50,"Description must be more than 50 characters")
-});
 
-interface Item {
-  id: number;
-  name: string;
+interface productItem{
+  id:number,
+  name:string,
+  category:{name:string},
+  price:number,
+  isOrdered?:boolean,
 }
 
+
+
+
 const ProductsPage: FC<ProductsPageProps> = () => {
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading,setLoading]=useState<boolean>(false)
   const { toast } = useToast();
-  const [categoryData, setCategoryData] = useState([]);
-
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-  });
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
-  }
+  const {productsDeletedata}=useAdminState()
 
 
-  async function getCategoryData() {
+  const [data,setData]=useState([])
+
+
+  async function getProducts(){
     try {
-      setLoading(true);
-      const response = await fetch("api/category");
-      const data = await response.json();
-      if (response.ok) {
-        setCategoryData(data.message);
-      } else {
-        console.log("Error");
+      setLoading(true)
+      const response=await fetch("/api/products")
+      const data= await response.json()
+      if(response.ok){
+        const filteredProducts = data.message.map((product:productItem) => ({
+          id:product.id,
+          name: product.name,
+          price: product.price,
+          isOrdered: product.isOrdered, 
+          category: product.category.name,
+        }));
+        setData(filteredProducts)
+        console.log(filteredProducts)
+      }else {
+        console.log("Something went wrong");
       }
-    } catch (error: any) {
+      
+    } catch (error:any) {
       throw new Error(error.message);
+      
+    }finally{
+      setLoading(false)
     }
-    setLoading(false)
   }
 
-  useEffect(() => {
-    getCategoryData();
-  }, []);
+
+
+  useEffect(()=>{
+    getProducts()
+
+
+  },[])
+  
+
+
+
+
+
   return (
-    <div className="w-screen flex items-center justify-center mt-5">
+    <div className="px-16 w-screen h-screen pt-5">
+      <div className="w-full   flex items-center gap-3 justify-between">
+        <Heading text={"Products"}/>
+        <Link href="/products/add-product">
+          <Button> Add New Product</Button>
+        </Link>
+      </div>
+      <hr className="mt-5" />
       {loading ? (
-        <Loader2 className="animate-spin" />
+        <div className="mt-5 flex w-screen items-center justify-center">
+          <Image src="/sync.png" alt="loading" className="animate-spin" width={25} height={25}/>
+        </div>
       ) : (
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="w-2/3 space-y-6"
-          >
-            <FormField
-              control={form.control}
-              name="category"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Categories</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a Category for your product" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {categoryData.map((size: Item) => (
-                        <SelectItem key={size.id} value={size.name}>
-                          {size.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="price"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Price</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      {...field}
-                      onChange={(e) => {
-                        field.onChange(parseFloat(e.target.value)); // Parse the string input to a number
-                      }}
-                      placeholder="in Rupees"
-                    />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea/>
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <Button type="submit">Submit</Button>
-          </form>
-        </Form>
+        <DataTable columns={columns} data={data} />
       )}
     </div>
+    
   );
 };
 

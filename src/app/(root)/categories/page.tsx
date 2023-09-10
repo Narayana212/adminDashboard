@@ -65,7 +65,7 @@ const CategoriesPage: FC<CategoryPageProps> = () => {
           title: "Saved Successfully",
         });
         setData(mappingData);
-        values.category=""
+       form.reset();
       } else {
         console.log("Something went wrong");
       }
@@ -86,9 +86,7 @@ const CategoriesPage: FC<CategoryPageProps> = () => {
           return { id: item.id, name: item.name, created_at: shortenedText };
         });
         setData(mappingData);
-        form.reset({
-          category: ""
-        });
+    
       } else {
         console.log("Something went wrong");
       }
@@ -106,7 +104,7 @@ const CategoriesPage: FC<CategoryPageProps> = () => {
 
   return (
     <div className="px-16 w-screen h-screen pt-5">
-      <div className="w-full flex items-center justify-between">
+      <div className="w-full flex items-center  gap-3 justify-between">
         <Heading text="Categories" />
         <AlertModal button={"Add New Category"} title={"Add New Category"}>
           <Form {...form}>

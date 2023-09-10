@@ -38,25 +38,30 @@ export const columns: ColumnDef<Categories>[] = [
     accessorKey: "name",
     header: "Name",
   },
+  { accessorKey: "price", header: "Price" },
   {
-    accessorKey: "created_at",
-    header: "Created At",
+    accessorKey: "category",
+    header: "Category",
+  },
+  {
+    accessorKey: "isOrdered",
+    header: "isOrdered",
   },
   {
     id: "settings",
     cell: ({ row }) => {
       const category = row.original;
 
-      const { categoryDeleteData, setCategoryDeleteData } = useAdminState();
+      const { productDeleteData, setProductDeleteData } = useAdminState();
       const { toast } = useToast();
 
       async function handleDelete(id: string) {
         try {
-          const response = await fetch(`api/category/${id}`, {
+          const response = await fetch(`api/product/${id}`, {
             method: "Delete",
           });
           if (response.ok) {
-            setCategoryDeleteData(id);
+            setProductDeleteData(id);
             toast({
               title: "Deleted SuccessFully",
             });
@@ -80,7 +85,7 @@ export const columns: ColumnDef<Categories>[] = [
                 navigator.clipboard.writeText(category.id.toLocaleString())
               }
             >
-              Copy category ID
+              Copy Product ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>

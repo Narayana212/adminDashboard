@@ -7,57 +7,46 @@ generator client {
 
 datasource db {
   provider     = "mysql"
-  url          = env("DATABASE_URL")
+  url          = "mysql://8gjh148bea0v4u82sxtc:pscale_pw_Fg5EqG7N9Sn3pGK9jR0YfmEcySCm8I3gCJC43zhvZnh@aws.connect.psdb.cloud/admin-dashboard?sslaccept=strict"
   relationMode = "prisma"
 }
 
-model ProductCategory {
-  id         Int       @id @default(autoincrement())
-  name       String
-  products   Product[]
-  created_at DateTime  @default(now())
-}
-
 model Product {
-  id          Int     @id @default(autoincrement())
-  name        String
+  id          Int             @id @default(autoincrement())
+  name        String  
   description String?
   price       Float
   categoryId  Int
+  category    ProductCategory @relation(fields: [categoryId], references: [id])
+  images      ProductImage[]
+  isOrdered   Boolean         @default(false)
 
-  category ProductCategory @relation(fields: [categoryId], references: [id])
-
-  images     ProductImage[]
-  orderItems OrderItem[]
-
-  @@index([categoryId], name: "category_idx")
+  @@index([categoryId])
 }
 
 model ProductImage {
   id        Int     @id @default(autoincrement())
   productId Int
-  url       String
+  url  String
   product   Product @relation(fields: [productId], references: [id])
 
-  @@index([productId], name: "product_id_idx")
+  @@index([productId])
 }
 
-model Order {
-  id        Int         @id @default(autoincrement())
-  orderDate DateTime
-  status    String
-  items     OrderItem[]
+model ProductCategory {
+  id         Int       @id @default(autoincrement())
+  name       String    @unique
+  products   Product[]
+  created_at DateTime  @default(now())
 }
 
 model OrderItem {
-  id              Int     @id @default(autoincrement())
-  orderId         Int
-  productId       Int
-  quantity        Int
-  priceAtPurchase Float
-  order           Order   @relation(fields: [orderId], references: [id])
-  product         Product @relation(fields: [productId], references: [id])
+  id          Int     @id @default(autoincrement())
+  orderId     Int
+  productId   Int
+  quantity    Int     @default(1)
+  price       Float
+  isDelivered Boolean @default(false)
 
-  @@index([orderId], name: "order_idx")
   @@index([productId], name: "product_idx")
 }

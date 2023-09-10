@@ -1,15 +1,21 @@
-
 "use client";
 import { useState, createContext, useContext } from "react";
 
 const AdminContext = createContext();
 
 export const AdminProvider = ({ children }) => {
-  const [colorDeleteData, setColorDeleteData] = useState();
-  const [sizeDeleteData,setSizeDeleteData]=useState()
-  const[categoryDeleteData,setCategoryDeleteData]=useState()
+  const [categoryDeleteData, setCategoryDeleteData] = useState();
+  const [productsDeleteData, setProductsDeleteData] = useState();
+
   return (
-    <AdminContext.Provider value={{ colorDeleteData, setColorDeleteData,sizeDeleteData,setSizeDeleteData,categoryDeleteData,setCategoryDeleteData }}>
+    <AdminContext.Provider
+      value={{
+        productsDeleteData,
+        setProductsDeleteData,
+        categoryDeleteData,
+        setCategoryDeleteData,
+      }}
+    >
       {children}
     </AdminContext.Provider>
   );
