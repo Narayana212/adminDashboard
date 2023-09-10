@@ -3,7 +3,7 @@ import { getAuth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }){
+export async function GET(request: NextRequest, { params }: { params: { id: number } }){
     try {
         const {userId}=getAuth(request)
         if(!userId){
@@ -15,7 +15,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         
         const category = await prisma.productCategory.findUnique({
             where: {
-                id: parseInt(params.id)
+                id: params.id
             }
         });
         return NextResponse.json({ message: category }, { status: 200 })
@@ -29,7 +29,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
 
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }){
+export async function DELETE(request: NextRequest, { params }: { params: { id: number } }){
     try {
         const { userId } = getAuth(request);
         if (!userId) {
@@ -39,16 +39,20 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
         if (!params.id) {
             return NextResponse.json({ message: "Invalid color" }, { status: 400 })
         }
-        console.log(params.id)
+        let id =params.id
+        if(typeof params.id === "string"){
+             id = parseInt(params.id)
+        }
+
         await prisma.productCategory.delete({
             where: {
-                id: parseInt(params.id)
+                id:id
             }
         });
-
         return NextResponse.json({ message: "Deleted Succesfully" }, { status: 200 })
 
     } catch (error: any) {
+        console.log(error.message)
         return NextResponse.json({ message: error.message }, { status: 500 })
     }
 
