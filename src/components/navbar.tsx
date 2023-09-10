@@ -7,7 +7,7 @@ import { Button } from './ui/button';
 import { UserButton } from '@clerk/nextjs';
 
 interface NavbarProps {
-  isLogin:boolean
+  isLogin?:boolean
 }
 
 const Links = [
