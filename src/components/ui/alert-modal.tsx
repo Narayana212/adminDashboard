@@ -33,7 +33,6 @@ const AlertModal: FC<AlertModalProps> = ({ title, button, children }) => {
         </AlertDialogHeader>
         <AlertDialogFooter className="flex flex-col gap-2 mt-4">
           <AlertDialogAction>Exit</AlertDialogAction>
-          <AlertDialogCancel >Cancel</AlertDialogCancel>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

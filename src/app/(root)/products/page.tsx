@@ -4,12 +4,13 @@ import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import Heading from "@/components/ui/heading";
 import { useToast } from "@/components/ui/use-toast";
-import { useAdminState } from "@/context/admin-provider";
+
 import Image from "next/image";
 import Link from "next/link";
 import { FC, useEffect, useState } from "react";
 import { number } from "zod";
 import { columns } from "./columns";
+import { useAdminState } from "@/providers/admin-provider";
 
 
 
@@ -30,7 +31,7 @@ interface productItem{
 const ProductsPage: FC<ProductsPageProps> = () => {
   const [loading,setLoading]=useState<boolean>(false)
   const { toast } = useToast();
-  const {productsDeletedata}=useAdminState()
+  const {productsDeleteData}=useAdminState()
 
 
   const [data,setData]=useState([])
@@ -63,18 +64,10 @@ const ProductsPage: FC<ProductsPageProps> = () => {
     }
   }
 
-
-
   useEffect(()=>{
     getProducts()
-
-
-  },[])
+  },[productsDeleteData])
   
-
-
-
-
 
   return (
     <div className="px-16 w-screen h-screen pt-5">

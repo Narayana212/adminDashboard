@@ -19,8 +19,8 @@ import { columns } from "./columns";
 import Heading from "@/components/ui/heading";
 import { Loader2, X } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { useAdminState } from "@/context/admin-provider";
 import Image from "next/image";
+import { useAdminState } from "@/providers/admin-provider";
 
 interface CategoryPageProps {}
 

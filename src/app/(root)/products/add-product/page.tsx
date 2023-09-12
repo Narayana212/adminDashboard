@@ -22,6 +22,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { FC, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -56,18 +57,20 @@ const defaultValues = {
 };
 
 const ProductsAddingPage: FC<ProductsAddingPageProps> = () => {
+  const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
+  const [submitLoading, setSubmitLoading] = useState<boolean>(false);
   const { toast } = useToast();
   const [categoryData, setCategoryData] = useState<Item[]>([]);
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues
+    defaultValues,
   });
 
   async function onSubmit(productData: z.infer<typeof FormSchema>) {
     try {
-      console.log(productData)
+      setSubmitLoading(true);
       const response = await fetch("/api/products", {
         method: "POST",
         body: JSON.stringify(productData),
@@ -76,18 +79,24 @@ const ProductsAddingPage: FC<ProductsAddingPageProps> = () => {
       const data = await response.json();
 
       if (response.ok) {
-        console.log(data);
         toast({
-          title: "Success",
+          title: "Product Added successfully",
         });
+
+        router.push("/products");
       } else {
-        console.log(data);
+        toast({
+          title: data.message,
+        });
       }
     } catch (error: any) {
       console.log(error.message);
       toast({
         title: "Something Went Wrong Please Try Again",
       });
+    } finally {
+      setSubmitLoading(false);
+      form.reset();
     }
   }
 
@@ -141,7 +150,10 @@ const ProductsAddingPage: FC<ProductsAddingPageProps> = () => {
                     </FormControl>
                     <SelectContent>
                       {categoryData.map((category) => (
-                        <SelectItem key={category.id} value={category.id.toString()}>
+                        <SelectItem
+                          key={category.id}
+                          value={category.id.toString()}
+                        >
                           {category.name}
                         </SelectItem>
                       ))}
