@@ -14,18 +14,18 @@ import { useAdminState } from "@/context/admin-provider";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 
-type Category = {
+type Product = {
   id: number;
   name: string;
 };
 
-const CellContent = ({ category }: { category: Category }) => {
+const CellContent = ({ product }: { product: Product }) => {
   const { setProductsDeleteData } = useAdminState();
   const { toast } = useToast();
 
   async function handleDelete(id: number) {
     try {
-      const response = await fetch(`api/category/${id}`, {
+      const response = await fetch(`api/products/${id}`, {
         method: "Delete",
       });
       if (response.ok) {
@@ -33,8 +33,13 @@ const CellContent = ({ category }: { category: Category }) => {
         toast({
           title: "Deleted Successfully",
         });
+      } else {
+        const data = await response.json();
+        toast({
+          title: data.message,
+        });
       }
-    } catch (error:any) {
+    } catch (error: any) {
       throw new Error(error.message);
     }
   }
@@ -51,7 +56,7 @@ const CellContent = ({ category }: { category: Category }) => {
         <DropdownMenuLabel>Settings</DropdownMenuLabel>
         <DropdownMenuItem
           onClick={() =>
-            navigator.clipboard.writeText(category.id.toLocaleString())
+            navigator.clipboard.writeText(product.id.toLocaleString())
           }
         >
           Copy category ID
@@ -61,7 +66,7 @@ const CellContent = ({ category }: { category: Category }) => {
           <Button
             variant={"ghost"}
             className="p-0"
-            onClick={() => handleDelete(category.id)}
+            onClick={() => handleDelete(product.id)}
           >
             Delete
           </Button>
@@ -71,7 +76,7 @@ const CellContent = ({ category }: { category: Category }) => {
   );
 };
 
-export const columns: ColumnDef<Category>[] = [
+export const columns: ColumnDef<Product>[] = [
   {
     accessorKey: "id",
     header: ({ column }) => (
@@ -95,7 +100,6 @@ export const columns: ColumnDef<Category>[] = [
   {
     accessorKey: "price",
     header: "price",
-    
   },
   {
     accessorKey: "isOrdered",
@@ -103,7 +107,6 @@ export const columns: ColumnDef<Category>[] = [
   },
   {
     id: "settings",
-    cell: ({ row }) => <CellContent category={row.original} />,
+    cell: ({ row }) => <CellContent product={row.original} />,
   },
 ];
-

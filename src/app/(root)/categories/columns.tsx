@@ -28,13 +28,18 @@ const CellContent = ({ category }: { category: Category }) => {
       const response = await fetch(`api/category/${id}`, {
         method: "Delete",
       });
+      const data = await response.json();
       if (response.ok) {
         setCategoryDeleteData(id);
         toast({
           title: "Deleted Successfully",
         });
+      } else {
+        toast({
+          title: data.message,
+        });
       }
-    } catch (error:any) {
+    } catch (error: any) {
       throw new Error(error.message);
     }
   }
@@ -97,4 +102,3 @@ export const columns: ColumnDef<Category>[] = [
     cell: ({ row }) => <CellContent category={row.original} />,
   },
 ];
-
