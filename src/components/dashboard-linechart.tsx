@@ -49,7 +49,10 @@ const data= [
 
 export function DashBoardLineChart() {
   return (
-    <ResponsiveContainer width="100%" height={350} className={"pt-16"}>
+   <div className="pt-5">
+    <h1 className="text-2xl text-bold">Sales</h1>
+     <ResponsiveContainer width="100%" height={350} className={"pt-10"}>
+      
       <LineChart
         data={data}
         margin={{
@@ -71,5 +74,6 @@ export function DashBoardLineChart() {
         />
       </LineChart>
     </ResponsiveContainer>
+   </div>
   );
 }
