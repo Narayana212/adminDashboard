@@ -5,13 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest, { params }: { params: { id: number } }) {
     try {
-        const { userId } = getAuth(request)
-        if (!userId) {
-            return NextResponse.json({ message: "Unauthorized User" }, { status: 401 })
-        }
-        if (!params.id) {
-            return NextResponse.json({ message: "Invalid category" }, { status: 400 })
-        }
+        
 
         const category = await prisma.productCategory.findUnique({
             where: {
@@ -31,14 +25,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: numb
 
 export async function DELETE(request: NextRequest, { params }: { params: { id: number } }) {
     try {
-        const { userId } = getAuth(request);
-        if (!userId) {
-            return NextResponse.json({ message: "Unauthorized User" }, { status: 401 })
-
-        }
-        if (!params.id) {
-            return NextResponse.json({ message: "Invalid category" }, { status: 400 })
-        }
+        
 
 
 
