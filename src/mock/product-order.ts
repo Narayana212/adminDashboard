@@ -8,5 +8,5 @@ interface ProductOrders {
 
 export const productOrders: ProductOrders[] = [
     { id: 1, title: '50+', description: "Products added" },
-    { id: 2, title: '20+', description: "Orders placed" }
+    { id: 2, title: '30+', description: "Orders placed" }
 ] 
