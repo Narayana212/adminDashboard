@@ -2,20 +2,30 @@ import { prisma } from "@/lib/prisma";
 import { getAuth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
+const corsHeaders = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+};
+
+export async function OPTIONS() {
+    return NextResponse.json({}, { headers: corsHeaders });
+}
+
+
+
 export async function GET(request: NextRequest) {
     try {
-        const { userId } = getAuth(request)
-        if (!userId) {
-            return NextResponse.json({ message: "UnAuthorizesd User" }, { status: 401 })
-        }
+        
 
         const products = await prisma.product.findMany({
             include: {
-                category: true 
+                category: true,
+                images:true
             }
         });
         console.log(products)
-        return NextResponse.json({ message: products }, { status: 200 })
+        return NextResponse.json({ message: products }, { headers: corsHeaders })
 
     } catch (error: any) {
         console.log(error.message)
