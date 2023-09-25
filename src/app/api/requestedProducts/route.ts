@@ -15,20 +15,16 @@ export async function OPTIONS() {
     return NextResponse.json({}, { headers: corsHeaders });
 }
 
+
+
 export async function GET(request: NextRequest) {
     try {
-        const { userId } = getAuth(request);
-
-        if (!userId) {
-            return NextResponse.json("unAuthorized User", { status: 401 })
-        }
-
         const requestedProducts = await prisma.requestedProduct.findMany({
             include: {
                 images: true
             }
         });
-        return NextResponse.json({ message: requestedProducts }, { status: 200 })
+        return NextResponse.json({ message: requestedProducts }, {headers: corsHeaders });
 
 
     } catch (error: any) {
