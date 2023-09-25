@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import Heading from "@/components/ui/heading";
 import { useToast } from "@/components/ui/use-toast";
@@ -11,6 +11,8 @@ import { FC, useEffect, useState } from "react";
 import { number } from "zod";
 import { columns } from "./columns";
 import { useAdminState } from "@/providers/admin-provider";
+import { variance } from "d3-array";
+import { Loader2 } from "lucide-react";
 
 
 
@@ -80,11 +82,19 @@ const ProductsPage: FC<ProductsPageProps> = () => {
       <hr className="mt-5" />
       {loading ? (
         <div className="mt-5 flex w-screen items-center justify-center">
-          <Image src="/sync.png" alt="loading" className="animate-spin" width={25} height={25}/>
+        <Loader2 className="animate-spin"/>
         </div>
       ) : (
+        <>
         <DataTable columns={columns} data={data} />
+        <Link className={buttonVariants()} href="/requestedProduct">
+          Add from Requested Products
+        </Link>
+        </>
+
+
       )}
+      
     </div>
     
   );
