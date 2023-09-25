@@ -1,6 +1,13 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
   Form,
   FormControl,
   FormDescription,
@@ -11,6 +18,7 @@ import {
 } from "@/components/ui/form";
 import ImageUpload from "@/components/ui/image-upload";
 import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -18,16 +26,79 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
+import test from "node:test";
 import { FC, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
 interface ProductsAddingPageProps {}
+
+const testProductValues = [
+  {
+    id: 1,
+    price: 10,
+    description: "This is a test product description.",
+    name: "Test Product",
+    images: [
+      {
+        url: "https://res.cloudinary.com/diynkxbpc/image/upload/v1695474409/jvzulobllxphluvwcqpg.jpg",
+      },
+      {
+        url: "https://res.cloudinary.com/diynkxbpc/image/upload/v1695474409/jvzulobllxphluvwcqpg.jpg",
+      },
+      
+    ],
+    phone:9912345900
+
+  },
+  {
+    id: 2,
+    price: 30,
+    description: "This is a 2nd test product description.",
+    name: "2nd Test Product",
+    images: [
+      {
+        url: "https://res.cloudinary.com/diynkxbpc/image/upload/v1695474409/jvzulobllxphluvwcqpg.jpg",
+      },
+    ],
+  },
+  {
+    id: 3,
+    price: 30,
+    description: "This is a 3rd test product description.",
+    name: "2nd Test Product",
+    images: [
+      {
+        url: "https://res.cloudinary.com/diynkxbpc/image/upload/v1695474409/jvzulobllxphluvwcqpg.jpg",
+      },
+    ],
+  },
+  {
+    id: 4,
+    price: 30,
+    description: "This is a 4th test product description.",
+    name: "2nd Test Product",
+    images: [
+      {
+        url: "https://res.cloudinary.com/diynkxbpc/image/upload/v1695474409/jvzulobllxphluvwcqpg.jpg",
+      },
+    ],
+  }
+];
 
 const FormSchema = z.object({
   categoryId: z.string(),
@@ -35,7 +106,7 @@ const FormSchema = z.object({
   description: z
     .string()
     .min(10, "Description must be more than 10 characters")
-    .max(100, "Description must be less than 50 characters"),
+    .max(100, "Description must be less than 100 characters"),
   name: z
     .string()
     .min(3, "Product Name must be at least 3 characters")
@@ -62,6 +133,10 @@ const ProductsAddingPage: FC<ProductsAddingPageProps> = () => {
   const [submitLoading, setSubmitLoading] = useState<boolean>(false);
   const { toast } = useToast();
   const [categoryData, setCategoryData] = useState<Item[]>([]);
+
+  async function addTestProduct(id: number) {
+    form.reset(testProductValues[id - 1]);
+  }
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -238,6 +313,51 @@ const ProductsAddingPage: FC<ProductsAddingPageProps> = () => {
             />
 
             <Button type="submit">Submit</Button>
+
+            <Sheet>
+              <SheetTrigger>
+                <Button type="button" className="ml-5" variant={"secondary"}>
+                  Add Requested Product
+                </Button>
+              </SheetTrigger>
+              <SheetContent>
+                <SheetHeader>
+                  <SheetTitle>Requested Products List</SheetTitle>
+
+                  <div>
+                    <ScrollArea  className="h-[120vh] flex flex-col gap-2">
+                      {testProductValues.map((testProduct) => (
+                        <Card key={testProduct.id} className="m-2">
+                          <CardHeader>
+                            <CardTitle>{testProduct.name}</CardTitle>
+                            <div className="flex gap-2">
+                              {testProduct.images.map((image) => (
+                                <Image
+                                  key={testProduct.id}
+                                  src={image.url}
+                                  width={"50"}
+                                  alt={"test"}
+                                  height={"50"}
+                                />
+                              ))}
+                            </div>
+                          </CardHeader>
+                          <CardContent>{testProduct.description}</CardContent>
+                          <CardFooter>
+                            <Button
+                              onClick={() => addTestProduct(testProduct.id)}
+                              variant={"outline"}
+                            >
+                              Add to Form
+                            </Button>
+                          </CardFooter>
+                        </Card>
+                      ))}
+                    </ScrollArea>
+                  </div>
+                </SheetHeader>
+              </SheetContent>
+            </Sheet>
           </form>
         </Form>
       )}

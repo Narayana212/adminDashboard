@@ -7,8 +7,32 @@ generator client {
 
 datasource db {
   provider     = "mysql"
-  url          = env("DATABASE_URL")
+  url          ="mysql://mwfsflz3ozoxhilyrfdq:pscale_pw_G6g2cgHC7WV3rT7zar5aB8vAKaG5tsROeS1x3MCf2wi@aws.connect.psdb.cloud/chatreattime?sslaccept=strict"
   relationMode = "prisma"
+}
+
+
+
+
+model RequestedProduct{
+  id Int @id @default(autoincrement())
+  name String 
+  description String?
+  price Float 
+  images RequestedImages[]
+  phoneNo BigInt
+  email String
+
+}
+
+
+model RequestedImages{
+  id Int @id @default(autoincrement())
+  requestedProductId Int
+  url String
+  requestedProduct RequestedProduct @relation(fields: [requestedProductId],references: [id])
+
+  @@index([requestedProductId])
 }
 
 model Product {
