@@ -3,9 +3,6 @@ import { getAuth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
 
-
-
-
 const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
@@ -16,9 +13,8 @@ export async function GET(request: NextRequest) {
     try {
         const { userId } = getAuth(request);
 
-
         if (!userId) {
-            return NextResponse.json("unAuthorized", { status: 401 })
+            return NextResponse.json("unAuthorized User", { status: 401 })
         }
 
         const requestedProducts = await prisma.requestedProduct.findMany({
