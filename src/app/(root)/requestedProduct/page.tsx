@@ -39,7 +39,7 @@ export default function RequestedProductsPage() {
       <div>
         {data.length>0 ? <>
           {data.map((a)=>(
-          <p>{a.name}</p>
+          <p key={a.id}>{a.name}</p>
         ))}</>:(<p>No items</p>)}
       </div>
     </div>
