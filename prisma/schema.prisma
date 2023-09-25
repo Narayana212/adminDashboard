@@ -7,7 +7,7 @@ generator client {
 
 datasource db {
   provider     = "mysql"
-  url          ="mysql://xyuci5uncur9vqf2zkqt:pscale_pw_gFGtTqDwSNjQN6GLt4418uH6SWVO5MoaZhqlVXC9E2c@aws.connect.psdb.cloud/chatreattime?sslaccept=strict"
+  url          ="mysql://6nyib8kmlmmi8ku1zcb5:pscale_pw_uTO8RSd9B3wHFGJTrBbSVVR5sR1zIfmPWMJb0BNpD57@aws.connect.psdb.cloud/chatreattime?sslaccept=strict"
   relationMode = "prisma"
 }
 
