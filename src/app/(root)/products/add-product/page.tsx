@@ -40,7 +40,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import test from "node:test";
 import { FC, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -314,50 +313,7 @@ const ProductsAddingPage: FC<ProductsAddingPageProps> = () => {
 
             <Button type="submit">Submit</Button>
 
-            <Sheet>
-              <SheetTrigger>
-                <Button type="button" className="ml-5" variant={"secondary"}>
-                  Add Requested Product
-                </Button>
-              </SheetTrigger>
-              <SheetContent>
-                <SheetHeader>
-                  <SheetTitle>Requested Products List</SheetTitle>
-
-                  <div>
-                    <ScrollArea  className="h-[120vh] flex flex-col gap-2">
-                      {testProductValues.map((testProduct) => (
-                        <Card key={testProduct.id} className="m-2">
-                          <CardHeader>
-                            <CardTitle>{testProduct.name}</CardTitle>
-                            <div className="flex gap-2">
-                              {testProduct.images.map((image) => (
-                                <Image
-                                  key={testProduct.id}
-                                  src={image.url}
-                                  width={"50"}
-                                  alt={"test"}
-                                  height={"50"}
-                                />
-                              ))}
-                            </div>
-                          </CardHeader>
-                          <CardContent>{testProduct.description}</CardContent>
-                          <CardFooter>
-                            <Button
-                              onClick={() => addTestProduct(testProduct.id)}
-                              variant={"outline"}
-                            >
-                              Add to Form
-                            </Button>
-                          </CardFooter>
-                        </Card>
-                      ))}
-                    </ScrollArea>
-                  </div>
-                </SheetHeader>
-              </SheetContent>
-            </Sheet>
+            
           </form>
         </Form>
       )}
