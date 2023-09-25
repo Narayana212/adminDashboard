@@ -57,8 +57,6 @@ export async function POST(request: NextRequest) {
         },);
 
         const data = await prisma.requestedProduct.findMany();
-
-        console.log(data)
         return NextResponse.json({ message: data }, {headers:corsHeaders}); 
     } catch (error: any) {
         console.log(error.message)
