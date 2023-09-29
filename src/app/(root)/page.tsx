@@ -1,4 +1,4 @@
-
+"use client"
 import Heading from "@/components/ui/heading";
 import {
   Card,
@@ -8,8 +8,19 @@ import {
 } from "@/components/ui/card";
 import { productOrders } from "@/mock/product-order";
 import {DashBoardLineChart} from "@/components/dashboard-linechart";
+import { isAdmin } from "@/lib/admin";
+import { useAuth } from "@clerk/nextjs";
+import { redirect } from "next/navigation";
+
 
 export default function Home() {
+
+  const {userId}=useAuth()
+
+  if(!isAdmin(userId)){
+    redirect("/notAdmin")
+    
+  }
   return (
     <div className="px-16 h-auto w-screen pt-5">
       <div className="w-full flex items-center gap-3 justify-between">
