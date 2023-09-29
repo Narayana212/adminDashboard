@@ -14,7 +14,7 @@ import { useAdminState } from "@/providers/admin-provider";
 import { Loader2 } from "lucide-react";
 import { auth, useAuth } from "@clerk/nextjs";
 import { isAdmin } from "@/lib/admin";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 
 interface ProductsPageProps {}
 
@@ -31,6 +31,12 @@ const ProductsPage: FC<ProductsPageProps> = () => {
   const { toast } = useToast();
   const { userId } = useAuth();
   const { productsDeleteData } = useAdminState();
+  
+
+  if(!isAdmin(userId)){
+    redirect("/notAdmin")
+    
+  }
 
   const [data, setData] = useState([]);
   const router = useRouter();

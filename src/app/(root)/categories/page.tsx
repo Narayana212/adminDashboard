@@ -6,7 +6,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -21,6 +20,9 @@ import { Loader2, X } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import Image from "next/image";
 import { useAdminState } from "@/providers/admin-provider";
+import { useAuth } from "@clerk/nextjs";
+import { isAdmin } from "@/lib/admin";
+import { redirect } from "next/navigation";
 
 interface CategoryPageProps {}
 
@@ -39,7 +41,7 @@ interface categoryItem {
 const CategoriesPage: FC<CategoryPageProps> = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const { toast } = useToast();
-  const {categoryDeleteData,setCategoryDeleteData}=useAdminState()
+  const { categoryDeleteData, setCategoryDeleteData } = useAdminState();
 
   const [data, setData] = useState([]);
   const form = useForm<z.infer<typeof formSchema>>({
@@ -65,11 +67,11 @@ const CategoriesPage: FC<CategoryPageProps> = () => {
           title: "Saved Successfully",
         });
         setData(mappingData);
-       form.reset();
+        form.reset();
       } else {
         toast({
-          title: data.message
-        })
+          title: data.message,
+        });
       }
       setLoading(false);
     } catch (error: any) {
@@ -88,12 +90,9 @@ const CategoriesPage: FC<CategoryPageProps> = () => {
           return { id: item.id, name: item.name, created_at: shortenedText };
         });
         setData(mappingData);
-    
       } else {
         console.log("Something went wrong");
       }
-      
-      
     } catch (error: any) {
       throw new Error(error.message);
     }
@@ -104,6 +103,11 @@ const CategoriesPage: FC<CategoryPageProps> = () => {
     getData();
   }, [categoryDeleteData]);
 
+  const { userId } = useAuth();
+
+  if (!isAdmin(userId)) {
+    redirect("/notAdmin");
+  }
   return (
     <div className="px-16 w-screen h-screen pt-5">
       <div className="w-full flex items-center  gap-3 justify-between">
@@ -118,7 +122,10 @@ const CategoriesPage: FC<CategoryPageProps> = () => {
                   <FormItem>
                     <div className="flex items-center justify-center gap-3">
                       <FormControl>
-                        <Input placeholder="Enter category here..." {...field} />
+                        <Input
+                          placeholder="Enter category here..."
+                          {...field}
+                        />
                       </FormControl>
                       <Button type="submit" variant={"outline"}>
                         {loading ? (
@@ -142,7 +149,13 @@ const CategoriesPage: FC<CategoryPageProps> = () => {
       <hr className="mt-5" />
       {loading ? (
         <div className="mt-5 flex w-screen items-center justify-center">
-          <Image src="/sync.png" alt="loading" className="animate-spin" width={25} height={25}/>
+          <Image
+            src="/sync.png"
+            alt="loading"
+            className="animate-spin"
+            width={25}
+            height={25}
+          />
         </div>
       ) : (
         <DataTable columns={columns} data={data} />
