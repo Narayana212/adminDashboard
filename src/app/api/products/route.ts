@@ -1,3 +1,4 @@
+import { isAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
 import { getAuth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
@@ -16,12 +17,12 @@ export async function OPTIONS() {
 
 export async function GET(request: NextRequest) {
     try {
-        
+
 
         const products = await prisma.product.findMany({
             include: {
                 category: true,
-                images:true
+                images: true
             }
         });
         console.log(products)
@@ -46,6 +47,9 @@ export async function POST(request: NextRequest) {
 
         if (!userId) {
             return NextResponse.json({ message: "Unauthorized User" }, { status: 401 });
+        }
+        if (!isAdmin(userId)) {
+            return NextResponse.json({ message: "Only Admin can Edit" }, { status: 400 })
         }
 
         await prisma.product.create({

@@ -67,7 +67,9 @@ const CategoriesPage: FC<CategoryPageProps> = () => {
         setData(mappingData);
        form.reset();
       } else {
-        console.log("Something went wrong");
+        toast({
+          title: data.message
+        })
       }
       setLoading(false);
     } catch (error: any) {

@@ -1,4 +1,6 @@
+import { isAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@clerk/nextjs";
 import { getAuth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -36,9 +38,14 @@ export async function POST(request: NextRequest) {
     try {
         const requestBody = await request.json()
         const { category } = requestBody
+        const {userId}=auth()
 
         if (!category) {
             return NextResponse.json({ message: "Invalid Category" }, { status: 400 })
+        }
+
+        if(!isAdmin(userId)){
+            return NextResponse.json({message:"Only Admin can Edit"},{status:400})
         }
 
         await prisma.productCategory.create({

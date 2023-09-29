@@ -1,3 +1,4 @@
+import { isAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
 import { getAuth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
@@ -38,6 +39,9 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: n
         const { userId } = getAuth(request);
         if (!userId) {
             return NextResponse.json({ message: "Unauthorized User" }, { status: 401 });
+        }
+        if(!isAdmin(userId)){
+            return NextResponse.json({message:"Only Admin can Edit"},{status:400})
         }
         if (!params.id) {
             return NextResponse.json({ message: "Invalid product" }, { status: 400 });
