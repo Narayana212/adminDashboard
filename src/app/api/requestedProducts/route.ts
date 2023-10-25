@@ -15,8 +15,6 @@ export async function OPTIONS() {
     return NextResponse.json({}, { headers: corsHeaders });
 }
 
-
-
 export async function GET(request: NextRequest) {
     try {
         const requestedProducts = await prisma.requestedProduct.findMany({
@@ -24,7 +22,7 @@ export async function GET(request: NextRequest) {
                 images: true
             }
         });
-        return NextResponse.json({ message: requestedProducts }, {headers: corsHeaders });
+        return NextResponse.json({ message: requestedProducts }, {headers:corsHeaders});
 
 
     } catch (error: any) {
@@ -55,7 +53,6 @@ export async function POST(request: NextRequest) {
 
             },
         },);
-
         const data = await prisma.requestedProduct.findMany();
         return NextResponse.json({ message: data }, {headers:corsHeaders}); 
     } catch (error: any) {

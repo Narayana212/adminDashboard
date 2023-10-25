@@ -20,7 +20,7 @@ model RequestedProduct{
   description String?
   price Float 
   images RequestedImages[]
-  phoneNo Int
+  phoneNo String
   email String
 
 }
