@@ -2,21 +2,31 @@ import { prisma } from "@/lib/prisma";
 import { getAuth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(request: NextRequest, { params }: { params: { id: number } }) {
+export async function GET(request: NextRequest, { params }: { params: { id: any } }) {
     try {
         const { userId } = getAuth(request)
+        const id=parseInt(params.id)
+       
         if (!userId) {
             return NextResponse.json({ message: "Unauthorized User" }, { status: 401 })
         }
         if (!params.id) {
             return NextResponse.json({ message: "Invalid product" }, { status: 400 })
         }
+        
+        
 
         const requestedProduct = await prisma.requestedProduct.findUnique({
             where: {
-                id: params.id
-            }
+                id
+            },
+            include: {
+                images: true 
+              }
         });
+        console.log(requestedProduct)
+
+
         return NextResponse.json({ message: requestedProduct }, { status: 200 })
 
 

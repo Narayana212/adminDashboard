@@ -23,14 +23,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { FC, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
 interface ProductsAddingPageProps {}
-
-
 
 const FormSchema = z.object({
   categoryId: z.string(),
@@ -51,26 +49,20 @@ interface Item {
   name: string;
 }
 
-const defaultValues = {
-  categoryId: "",
-  price: 0,
-  description: "",
-  name: "",
-  images: [],
-};
-
 const ProductsAddingPage: FC<ProductsAddingPageProps> = () => {
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
   const [submitLoading, setSubmitLoading] = useState<boolean>(false);
+  const [defaultValues, setDefaultValues] = useState({
+    categoryId: "",
+    price: 0,
+    description: "",
+    name: "",
+    images: [],
+  });
   const { toast } = useToast();
   const [categoryData, setCategoryData] = useState<Item[]>([]);
-
- 
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-    defaultValues,
-  });
+  const { id } = useParams();
 
   async function onSubmit(productData: z.infer<typeof FormSchema>) {
     try {
@@ -123,9 +115,49 @@ const ProductsAddingPage: FC<ProductsAddingPageProps> = () => {
     setLoading(false);
   }
 
+  async function getRequestedProductData(id: any) {
+    try {
+      const intId = parseInt(id);
+      const response = await fetch(`/api/requestedProducts/${intId}`);
+      const data = await response.json();
+      if (response.ok) {
+        toast({
+          title: "Product retrieved Successfully",
+        });
+        setDefaultValues({
+          categoryId: "",
+          price: data.message.price,
+          description: data.message.description,
+          name: data.message.name,
+          images: data.message.images,
+        });
+        console.log(data.message)
+        
+        
+      } else {
+        toast({
+          title: "Something went wrong",
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
+  }
+
+ 
+
+  
+
   useEffect(() => {
     getCategoryData();
+    getRequestedProductData(id);
   }, []);
+  
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: defaultValues,
+  });
 
   return (
     <div className="w-screen flex items-center justify-center mt-5">
@@ -145,7 +177,7 @@ const ProductsAddingPage: FC<ProductsAddingPageProps> = () => {
                   <FormLabel>Categories</FormLabel>
                   <Select
                     onValueChange={field.onChange}
-                    defaultValue={field.value.toString()}
+                    defaultValue="1"
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -178,6 +210,7 @@ const ProductsAddingPage: FC<ProductsAddingPageProps> = () => {
                     <Input
                       type="number"
                       {...field}
+                      value={defaultValues.price} 
                       onChange={(e) => {
                         field.onChange(parseFloat(e.target.value));
                       }}
@@ -195,7 +228,7 @@ const ProductsAddingPage: FC<ProductsAddingPageProps> = () => {
                 <FormItem>
                   <FormLabel>Name of Product</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input {...field} value={defaultValues.name} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -208,15 +241,18 @@ const ProductsAddingPage: FC<ProductsAddingPageProps> = () => {
                 <FormItem>
                   <FormLabel>Images</FormLabel>
                   <FormControl>
+                    
                     <ImageUpload
-                      value={field.value.map((image) => image.url)}
+                    // @ts-ignore
+                      value={defaultValues.images.map((image) => image.url)}
                       disabled={loading}
                       onChange={(url) =>
-                        field.onChange([...field.value, { url }])
+                        field.onChange([...defaultValues.images, { url }])
                       }
                       onRemove={(url) =>
                         field.onChange([
-                          ...field.value.filter(
+                          ...defaultValues.images.filter(
+                            // @ts-ignore
                             (current) => current.url !== url
                           ),
                         ])
@@ -234,16 +270,13 @@ const ProductsAddingPage: FC<ProductsAddingPageProps> = () => {
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea {...field} />
+                    <Textarea {...field} value={defaultValues.description} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
             <Button type="submit">Submit</Button>
-
-            
           </form>
         </Form>
       )}
