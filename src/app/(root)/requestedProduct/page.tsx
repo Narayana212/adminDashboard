@@ -170,12 +170,12 @@ export default function RequestedProductsPage() {
               >
                 <div className="w-72">
                   <Slider {...settings}>
-                    {a.images.map((img) => (
-                      <div className="flex justify-center items-center">
+                    {a.images.map((img) => ( 
+                      <div className="flex justify-center items-center"  key={img.id}>
                         <Image
                           alt={a.name}
                           src={img.url}
-                          key={img.id}
+                         
                           width={300}
                           height={200}
                         />
