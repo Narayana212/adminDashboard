@@ -62,10 +62,12 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: n
             },
         });
 
+        console.log(product)
+
         if (!product) {
             return NextResponse.json({ message: "Product not found" }, { status: 404 });
         }
-
+        console.log(product.images)
         if (product.images && product.images.length > 0) {
             for (const image of product.images) {
                 await prisma.requestedImages.delete({
@@ -75,14 +77,21 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: n
                 });
             }
         }
+        console.log(product.images)
 
-        await prisma.product.delete({
+        await prisma.requestedProduct.delete({
             where: {
                 id: id,
             },
         });
+        const requestedProducts = await prisma.requestedProduct.findMany({
+            include: {
+                images: true
+            }
+        });
+        
 
-        return NextResponse.json({ message: "Requested Product Deleted Successfully" }, { status: 200 });
+        return NextResponse.json({ message: requestedProducts }, { status: 200 });
     } catch (error: any) {
         console.error(error.message);
         return NextResponse.json({ message: error.message }, { status: 500 });

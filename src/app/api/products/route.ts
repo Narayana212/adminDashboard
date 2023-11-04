@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     try {
         const { userId } = getAuth(request);
         const requestBody = await request.json();
-        const { categoryId, name, price, description, images } = requestBody;
+        const { categoryId, name, price, description, images ,email,phoneNo} = requestBody;
 
         if (!userId) {
             return NextResponse.json({ message: "Unauthorized User" }, { status: 401 });
@@ -65,6 +65,8 @@ export async function POST(request: NextRequest) {
                         ],
                     },
                 },
+                email,
+                phoneNo
             },
         },);
 

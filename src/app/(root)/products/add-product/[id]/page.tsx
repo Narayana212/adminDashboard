@@ -42,6 +42,8 @@ const FormSchema = z.object({
     .min(3, "Product Name must be at least 3 characters")
     .max(20, "Product Name must be less than 20 characters"),
   images: z.object({ url: z.string() }).array(),
+  phoneNo: z.string(),
+  email: z.string(),
 });
 
 interface Item {
@@ -59,6 +61,8 @@ const ProductsAddingPage: FC<ProductsAddingPageProps> = () => {
     description: "",
     name: "",
     images: [],
+    phoneNo:"",
+    email:"",
   });
   const { toast } = useToast();
   const [categoryData, setCategoryData] = useState<Item[]>([]);
@@ -67,6 +71,7 @@ const ProductsAddingPage: FC<ProductsAddingPageProps> = () => {
   async function onSubmit(productData: z.infer<typeof FormSchema>) {
     try {
       setSubmitLoading(true);
+      console.log(productData)
       const response = await fetch("/api/products", {
         method: "POST",
         body: JSON.stringify(productData),
@@ -130,6 +135,8 @@ const ProductsAddingPage: FC<ProductsAddingPageProps> = () => {
           description: data.message.description,
           name: data.message.name,
           images: data.message.images,
+          email: data.message.email,
+          phoneNo: data.message.phoneNo
         });
         console.log(data.message)
         
@@ -169,6 +176,32 @@ const ProductsAddingPage: FC<ProductsAddingPageProps> = () => {
             onSubmit={form.handleSubmit(onSubmit)}
             className="w-2/3 space-y-6"
           >
+             <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <Input  {...field}  value={defaultValues.email}  />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="phoneNo"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Phone Number</FormLabel>
+                <Input
+                  
+                  {...field}
+                  value={defaultValues.phoneNo}
+                 
+                />
+              </FormItem>
+            )}
+          />
+
             <FormField
               control={form.control}
               name="categoryId"
@@ -177,7 +210,7 @@ const ProductsAddingPage: FC<ProductsAddingPageProps> = () => {
                   <FormLabel>Categories</FormLabel>
                   <Select
                     onValueChange={field.onChange}
-                    defaultValue="1"
+                    
                   >
                     <FormControl>
                       <SelectTrigger>

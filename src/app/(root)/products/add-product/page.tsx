@@ -44,6 +44,8 @@ const FormSchema = z.object({
     .min(3, "Product Name must be at least 3 characters")
     .max(20, "Product Name must be less than 20 characters"),
   images: z.object({ url: z.string() }).array(),
+  phoneNo: z.string(),
+  email: z.string().email("INVALID EMAIL"),
 });
 
 interface Item {
@@ -57,6 +59,8 @@ const defaultValues = {
   description: "",
   name: "",
   images: [],
+  phoneNo:"",
+  email:"",
 };
 
 const ProductsAddingPage: FC<ProductsAddingPageProps> = () => {
@@ -137,6 +141,31 @@ const ProductsAddingPage: FC<ProductsAddingPageProps> = () => {
             onSubmit={form.handleSubmit(onSubmit)}
             className="w-2/3 space-y-6"
           >
+             <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <Input placeholder="test@test.com" {...field} />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="phoneNo"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Phone Number</FormLabel>
+                <Input
+                  placeholder="999999999"
+                  {...field}
+                 
+                />
+              </FormItem>
+            )}
+          />
+
             <FormField
               control={form.control}
               name="categoryId"

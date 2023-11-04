@@ -3,10 +3,32 @@
 import { Button, buttonVariants } from "@/components/ui/button";
 import Heading from "@/components/ui/heading";
 import { useToast } from "@/components/ui/use-toast";
-import { Mail, Phone } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Divide,
+  Loader2,
+  Mail,
+  Phone,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useRouter } from "next/navigation";
 
 interface Images {
   id: number;
@@ -20,15 +42,70 @@ interface RequestedProduct {
   description: string;
   email: string;
   phoneNo: string;
-  price:string
+  price: string;
 }
+
+const NextArrow = (props: any) => {
+  const { onClick } = props;
+  return (
+    <div onClick={onClick} className="absolute top-52 -right-7 cursor-pointer">
+      <ChevronRight className="text-black" size={"20px"} />
+    </div>
+  );
+};
+const PrevArrow = (props: any) => {
+  const { onClick } = props;
+  return (
+    <div onClick={onClick} className="absolute top-52 -left-7 cursor-pointer">
+      <ChevronLeft className="text-black" size={"20px"} />
+    </div>
+  );
+};
 
 export default function RequestedProductsPage() {
   const [data, setData] = useState<RequestedProduct[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const router=useRouter()
+  const [deleteLoading,setDeleteLoading]= useState<boolean>(false);
   const { toast } = useToast();
+  var settings = {
+    className: "center",
+    dots: false,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 1,
+        },
+      },
+      {
+        breakpoint: 768,
+        settings: {
+          slidesToShow: 1,
+        },
+      },
+      {
+        breakpoint: 550,
+        settings: {
+          slidesToShow: 1,
+        },
+      },
+    ],
+    autoplaySpeed: 1000,
+    nextArrow: <NextArrow />,
+    prevArrow: <PrevArrow />,
+  };
+
   useEffect(() => {
     async function getRequestedProducts() {
       try {
+        setLoading(true);
         const response = await fetch("/api/requestedProducts");
         const data = await response.json();
         if (response.ok) {
@@ -41,38 +118,77 @@ export default function RequestedProductsPage() {
         }
       } catch (error: any) {
         console.error("Error fetching data:", error.message);
+      } finally {
+        setLoading(false);
       }
     }
     getRequestedProducts();
   }, []);
+
+  async function removeProduct(id: any) {
+    try {
+      setDeleteLoading(true)
+      const response = await fetch(`api/requestedProducts/${id}`, {
+        method: "Delete",
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setData(data.message);
+        
+        toast({
+          title: "Deleted Successfully",
+        });
+        router.refresh()
+      } else {
+        const data = await response.json();
+        toast({
+          title: data.message,
+        });
+      }
+    } catch (error:any) {
+      throw new Error(error.message)
+    }finally{
+      setDeleteLoading(false)
+    }
+  }
 
   return (
     <div className="px-12 py-5 ">
       <Heading text="Requested Products" />
       <hr className="mt-5" />
       <div className="mt-5">
-        {data.length > 0 ? (
+        {loading ? (
+          <div className="flex justify-center items-center">
+            <Loader2 className="animate-spin" />
+          </div>
+        ) : data.length > 0 ? (
           <>
             {data.map((a) => (
               <div
                 key={a.id}
-                className=" rounded-md border m-5 p-5 flex gap-x-5 "
+                className=" rounded-md border m-5 p-5 flex flex-col md:flex-row gap-10 "
               >
-                {a.images.map((img) => (
-                  <Image
-                    className="border"
-                    alt={a.name}
-                    src={img.url}
-                    key={img.id}
-                    width={400}
-                    height={300}
-                  />
-                ))}
+                <div className="w-72">
+                  <Slider {...settings}>
+                    {a.images.map((img) => (
+                      <div className="flex justify-center items-center">
+                        <Image
+                          alt={a.name}
+                          src={img.url}
+                          key={img.id}
+                          width={300}
+                          height={200}
+                        />
+                      </div>
+                    ))}
+                  </Slider>
+                </div>
+
                 <div className="flex flex-col gap-2">
                   <p className="font-semibold">Product Name: {a.name}</p>
                   <p className="font-semibold">Price: ₹{a.price}</p>
                   <div>
-                    <p className="underline underline-offset-4 uppercase  font-bold">
+                    <p className="underline underline-offset-4  font-semibold">
                       Description
                     </p>
                     <p>{a.description}</p>
@@ -86,10 +202,42 @@ export default function RequestedProductsPage() {
                     <Phone className="h-4 w-4" />
                     {a.phoneNo}
                   </p>
-                  
-                  
-                 <Link href={`/products/add-product/${a.id}`} className={buttonVariants()}>Add to Form</Link>
-                  <Button variant={"secondary"}>Remove the Product</Button>
+
+                  <Link
+                    href={`/products/add-product/${a.id}`}
+                    className={buttonVariants()}
+                  >
+                    Add to Form
+                  </Link>
+
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant={"secondary"}>Remove the Product</Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Are you absolutely sure?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action cannot be undone. This will permanently
+                          delete the product from servers.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                       
+                          <Button
+                            variant={"destructive"}
+                            onClick={() => removeProduct(a.id)}
+                            disabled={deleteLoading}
+                          >
+                            {deleteLoading?(<div className="flex items-center gap-3"><Loader2 className="animate-spin"/><p>Please Wait</p></div>):"Remove the Product"}
+                          </Button>
+                        
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </div>
             ))}

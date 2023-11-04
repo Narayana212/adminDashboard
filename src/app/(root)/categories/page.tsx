@@ -149,13 +149,8 @@ const CategoriesPage: FC<CategoryPageProps> = () => {
       <hr className="mt-5" />
       {loading ? (
         <div className="mt-5 flex w-screen items-center justify-center">
-          <Image
-            src="/sync.png"
-            alt="loading"
-            className="animate-spin"
-            width={25}
-            height={25}
-          />
+        <Loader2 className="animate-spin"/>
+
         </div>
       ) : (
         <DataTable columns={columns} data={data} />

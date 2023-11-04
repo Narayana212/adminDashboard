@@ -44,7 +44,8 @@ model Product {
   category    ProductCategory @relation(fields: [categoryId], references: [id])
   images      ProductImage[]
   isOrdered   Boolean         @default(false)
-
+  email String
+  phoneNo String
   @@index([categoryId])
 }
 
@@ -62,15 +63,6 @@ model ProductCategory {
   name       String    @unique
   products   Product[]
   created_at DateTime  @default(now())
+
 }
 
-model OrderItem {
-  id          Int     @id @default(autoincrement())
-  orderId     Int
-  productId   Int
-  quantity    Int     @default(1)
-  price       Float
-  isDelivered Boolean @default(false)
-
-  @@index([productId], name: "product_idx")
-}
