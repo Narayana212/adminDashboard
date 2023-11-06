@@ -29,6 +29,17 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useRouter } from "next/navigation";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 interface Images {
   id: number;
@@ -62,12 +73,22 @@ const PrevArrow = (props: any) => {
   );
 };
 
+interface Item {
+  id: number;
+  name: string;
+}
+
 export default function RequestedProductsPage() {
   const [data, setData] = useState<RequestedProduct[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const router=useRouter()
-  const [deleteLoading,setDeleteLoading]= useState<boolean>(false);
+  const [selectedValue, setSelectedValue] = useState(null);
+
+  const router = useRouter();
+  const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
   const { toast } = useToast();
+
+  const [categoryData, setCategoryData] = useState<Item[]>([]);
+
   var settings = {
     className: "center",
     dots: false,
@@ -127,30 +148,83 @@ export default function RequestedProductsPage() {
 
   async function removeProduct(id: any) {
     try {
-      setDeleteLoading(true)
+      setDeleteLoading(true);
       const response = await fetch(`api/requestedProducts/${id}`, {
         method: "Delete",
       });
       const data = await response.json();
       if (response.ok) {
         setData(data.message);
-        
+
         toast({
           title: "Deleted Successfully",
         });
-        router.refresh()
+        router.refresh();
       } else {
         const data = await response.json();
         toast({
           title: data.message,
         });
       }
-    } catch (error:any) {
-      throw new Error(error.message)
-    }finally{
-      setDeleteLoading(false)
+    } catch (error: any) {
+      throw new Error(error.message);
+    } finally {
+      setDeleteLoading(false);
     }
   }
+  async function getCategoryData() {
+    try {
+      setLoading(true);
+      const response = await fetch("/api/category");
+      const data = await response.json();
+      if (response.ok) {
+        setCategoryData(data.message);
+      } else {
+        console.log(data);
+      }
+    } catch (error: any) {
+      console.log(error.message);
+      toast({
+        title: "Something Went Wrong Please Try Again",
+      });
+    }
+    setLoading(false);
+  }
+  const handleSelectChange = (event:any) => {
+    const value = event.target.value;
+    setSelectedValue(value);
+  };
+
+
+  const FormSchema = z.object({
+    categoryId: z.string(),
+   
+  });
+
+  const defaultValues = {
+    categoryId: "",
+  }
+  
+  
+
+  useEffect(() => {
+    getCategoryData();
+  }, []);
+
+
+  function addtheProduct(){
+    console.log(selectedValue)
+  }
+
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    defaultValues,
+  });
+
+  async function onSubmit(productData: z.infer<typeof FormSchema>) {
+    console.log(productData)
+  }
+
 
   return (
     <div className="px-12 py-5 ">
@@ -170,12 +244,14 @@ export default function RequestedProductsPage() {
               >
                 <div className="w-72">
                   <Slider {...settings}>
-                    {a.images.map((img) => ( 
-                      <div className="flex justify-center items-center"  key={img.id}>
+                    {a.images.map((img) => (
+                      <div
+                        className="flex justify-center items-center"
+                        key={img.id}
+                      >
                         <Image
                           alt={a.name}
                           src={img.url}
-                         
                           width={300}
                           height={200}
                         />
@@ -203,13 +279,74 @@ export default function RequestedProductsPage() {
                     {a.phoneNo}
                   </p>
 
-                  <Link
-                    href={`/products/add-product/${a.id}`}
-                    className={buttonVariants()}
-                  >
-                    Add to Form
-                  </Link>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button>Add the Product</Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Are you absolutely sure?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="w-2/3 space-y-6"
+          >
+           
+        
+          
 
+            <FormField
+              control={form.control}
+              name="categoryId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Categories</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value.toString()}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a Category for your product" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {categoryData.map((category) => (
+                        <SelectItem
+                          key={category.id}
+                          value={category.id.toString()}
+                        >
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            
+
+            <Button type="submit">Submit</Button>
+
+            
+          </form>
+        </Form>
+                
+            
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <Button onClick={addtheProduct}>Add the Product</Button>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button variant={"secondary"}>Remove the Product</Button>
@@ -226,15 +363,21 @@ export default function RequestedProductsPage() {
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                       
-                          <Button
-                            variant={"destructive"}
-                            onClick={() => removeProduct(a.id)}
-                            disabled={deleteLoading}
-                          >
-                            {deleteLoading?(<div className="flex items-center gap-3"><Loader2 className="animate-spin"/><p>Please Wait</p></div>):"Remove the Product"}
-                          </Button>
-                        
+
+                        <Button
+                          variant={"destructive"}
+                          onClick={() => removeProduct(a.id)}
+                          disabled={deleteLoading}
+                        >
+                          {deleteLoading ? (
+                            <div className="flex items-center gap-3">
+                              <Loader2 className="animate-spin" />
+                              <p>Please Wait</p>
+                            </div>
+                          ) : (
+                            "Remove the Product"
+                          )}
+                        </Button>
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>
