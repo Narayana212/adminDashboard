@@ -220,7 +220,7 @@ export default function RequestedProductsPage() {
         router.push("/products");
       } else {
         toast({
-          title: "Something went wrong",
+          title: responseData.message,
         });
       }
     } catch (error: any) {

@@ -45,6 +45,7 @@ export async function POST(request: NextRequest) {
         const requestBody = await request.json();
         const { categoryId, name, price, description, images ,email,phoneNo} = requestBody;
 
+        console.log(categoryId, name, price, description, images ,email,phoneNo)
         if (!userId) {
             return NextResponse.json({ message: "Unauthorized User" }, { status: 401 });
         }
@@ -76,7 +77,11 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ message: data }, { status: 200 });
     } catch (error: any) {
         console.log(error.message)
+        if (error.code === 'P2002') {
+            return NextResponse.json({ message: "Product  already exists" }, { status: 400 });
+        }else{
         return NextResponse.json({ message: error.message }, { status: 500 });
+        }
     }
 }
 
