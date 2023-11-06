@@ -29,17 +29,11 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useRouter } from "next/navigation";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { cn } from "@/lib/utils";
 
 interface Images {
   id: number;
@@ -54,6 +48,7 @@ interface RequestedProduct {
   email: string;
   phoneNo: string;
   price: string;
+  categoryId?: any;
 }
 
 const NextArrow = (props: any) => {
@@ -81,14 +76,13 @@ interface Item {
 export default function RequestedProductsPage() {
   const [data, setData] = useState<RequestedProduct[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [selectedValue, setSelectedValue] = useState(null);
-
+  const [categoryId, setcategoryId] = useState(null);
   const router = useRouter();
+
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
   const { toast } = useToast();
-
   const [categoryData, setCategoryData] = useState<Item[]>([]);
-
+  const [submitLoading, setSubmitLoading] = useState(false);
   var settings = {
     className: "center",
     dots: false,
@@ -172,6 +166,7 @@ export default function RequestedProductsPage() {
       setDeleteLoading(false);
     }
   }
+
   async function getCategoryData() {
     try {
       setLoading(true);
@@ -190,41 +185,53 @@ export default function RequestedProductsPage() {
     }
     setLoading(false);
   }
-  const handleSelectChange = (event:any) => {
+
+  const handleSelectChange = (event: any) => {
     const value = event.target.value;
-    setSelectedValue(value);
+    setcategoryId(value);
   };
-
-
-  const FormSchema = z.object({
-    categoryId: z.string(),
-   
-  });
-
-  const defaultValues = {
-    categoryId: "",
-  }
-  
-  
 
   useEffect(() => {
     getCategoryData();
   }, []);
 
+  async function addtheProduct(id: any) {
+    try {
+      setSubmitLoading(true);
+      let productData = data.filter((data) => data.id == id);
 
-  function addtheProduct(){
-    console.log(selectedValue)
+      productData = productData.map((product) => ({
+        ...product,
+        // @ts-ignore
+        categoryId: categoryId.toString(),
+      }));
+      const response = await fetch("/api/products", {
+        method: "POST",
+        body: JSON.stringify(productData[0]),
+      });
+
+      const responseData = await response.json();
+
+      if (response.ok) {
+        toast({
+          title: "Product Added successfully",
+        });
+
+        router.push("/products");
+      } else {
+        toast({
+          title: "Something went wrong",
+        });
+      }
+    } catch (error: any) {
+      console.log(error.message);
+      toast({
+        title: "Something Went Wrong Please Try Again",
+      });
+    } finally {
+      setSubmitLoading(false);
+    }
   }
-
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-    defaultValues,
-  });
-
-  async function onSubmit(productData: z.infer<typeof FormSchema>) {
-    console.log(productData)
-  }
-
 
   return (
     <div className="px-12 py-5 ">
@@ -289,61 +296,37 @@ export default function RequestedProductsPage() {
                           Are you absolutely sure?
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="w-2/3 space-y-6"
-          >
-           
-        
-          
-
-            <FormField
-              control={form.control}
-              name="categoryId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Categories</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value.toString()}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a Category for your product" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {categoryData.map((category) => (
-                        <SelectItem
-                          key={category.id}
-                          value={category.id.toString()}
-                        >
-                          {category.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            
-
-            <Button type="submit">Submit</Button>
-
-            
-          </form>
-        </Form>
-                
-            
+                          <select
+                            className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            onChange={handleSelectChange}
+                            value={categoryId ?? ""}
+                          >
+                            <option value="" disabled hidden>
+                              Select Category for the Product
+                            </option>
+                            {categoryData.map((category) => (
+                              <option
+                                key={category.id}
+                                value={category.id.toString()}
+                              >
+                                {category.name}
+                              </option>
+                            ))}
+                          </select>
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <Button onClick={addtheProduct}>Add the Product</Button>
+                        <Button onClick={() => addtheProduct(a.id)}>
+                        {submitLoading ? (
+                            <div className="flex items-center gap-3">
+                              <Loader2 className="animate-spin" />
+                              <p>Please Wait</p>
+                            </div>
+                          ) : (
+                            "Add the Product"
+                          )}
+                        </Button>
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>
