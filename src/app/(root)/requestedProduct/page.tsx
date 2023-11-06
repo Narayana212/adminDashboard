@@ -316,7 +316,7 @@ export default function RequestedProductsPage() {
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogCancel onClick={()=>setcategoryId(null)}>Cancel</AlertDialogCancel>
                         <Button onClick={() => addtheProduct(a.id)}>
                         {submitLoading ? (
                             <div className="flex items-center gap-3">
