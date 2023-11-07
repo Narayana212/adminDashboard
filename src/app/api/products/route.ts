@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     try {
         const { userId } = getAuth(request);
         const requestBody = await request.json();
-        const { categoryId, name, price, description, images ,email,phoneNo} = requestBody;
+        const { categoryId, name,id, price, description, images ,email,phoneNo} = requestBody;
 
         console.log(categoryId, name, price, description, images ,email,phoneNo)
         if (!userId) {
@@ -71,10 +71,10 @@ export async function POST(request: NextRequest) {
             },
         },);
 
-        if( images[0]. requestedProductId){
+        if( id){
             const product = await prisma.requestedProduct.findUnique({
                 where: {
-                    id: images[0]. requestedProductId,
+                    id: id,
                 },
                 include: {
                     images: true,
@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
 
             await prisma.requestedProduct.delete({
                 where: {
-                    id:images[0]. requestedProductId ,
+                    id:id ,
                 },
             });
             
