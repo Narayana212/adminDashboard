@@ -16,8 +16,11 @@ import { redirect } from "next/navigation";
 export default function Home() {
 
   const {userId}=useAuth()
+  
+  console.log(isAdmin(userId))
 
   if(!isAdmin(userId)){
+    
     redirect("/notAdmin")
     
   }

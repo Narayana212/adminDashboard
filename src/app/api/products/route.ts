@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
         if (!isAdmin(userId)) {
             return NextResponse.json({ message: "Only Admin can Edit" }, { status: 400 })
         }
-
+       
         await prisma.product.create({
             data: {
                 name,
@@ -70,6 +70,37 @@ export async function POST(request: NextRequest) {
                 phoneNo
             },
         },);
+
+        if( images[0]. requestedProductId){
+            const product = await prisma.requestedProduct.findUnique({
+                where: {
+                    id: images[0]. requestedProductId,
+                },
+                include: {
+                    images: true,
+                },
+            });
+            if (!product) {
+                return NextResponse.json({ message: "Product not found" }, { status: 404 });
+            }
+
+            if (product.images && product.images.length > 0) {
+                for (const image of product.images) {
+                    await prisma.requestedImages.delete({
+                        where: {
+                            id: image.id,
+                        },
+                    });
+                }
+            }
+
+            await prisma.requestedProduct.delete({
+                where: {
+                    id:images[0]. requestedProductId ,
+                },
+            });
+            
+        }
 
         const data = await prisma.product.findMany();
 

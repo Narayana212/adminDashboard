@@ -1,5 +1,6 @@
 "use client";
-
+import {sendAcceptedEmail} from '../../../actions/send-accepted'
+import {sendRejectedEmail} from '../../../actions/send-rejected'
 import { Button, buttonVariants } from "@/components/ui/button";
 import Heading from "@/components/ui/heading";
 import { useToast } from "@/components/ui/use-toast";
@@ -12,7 +13,7 @@ import {
   Phone,
 } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+
 import React, { useEffect, useState } from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
@@ -140,7 +141,7 @@ export default function RequestedProductsPage() {
     getRequestedProducts();
   }, []);
 
-  async function removeProduct(id: any) {
+  async function removeProduct(id: any,email:any) {
     try {
       setDeleteLoading(true);
       const response = await fetch(`api/requestedProducts/${id}`, {
@@ -149,6 +150,7 @@ export default function RequestedProductsPage() {
       const data = await response.json();
       if (response.ok) {
         setData(data.message);
+        sendRejectedEmail(email)
 
         toast({
           title: "Deleted Successfully",
@@ -195,7 +197,7 @@ export default function RequestedProductsPage() {
     getCategoryData();
   }, []);
 
-  async function addtheProduct(id: any) {
+  async function addtheProduct(id: any,name:any,description:string,price:any,email:any) {
     try {
       setSubmitLoading(true);
       let productData = data.filter((data) => data.id == id);
@@ -216,6 +218,7 @@ export default function RequestedProductsPage() {
         toast({
           title: "Product Added successfully",
         });
+        sendAcceptedEmail(name,price,description,email)
 
         router.push("/products");
       } else {
@@ -247,9 +250,9 @@ export default function RequestedProductsPage() {
             {data.map((a) => (
               <div
                 key={a.id}
-                className=" rounded-md border m-5 p-5 flex flex-col md:flex-row gap-10 "
+                className=" rounded-md border m-5  p-2 lg:p-5 flex flex-col md:flex-row gap-10 "
               >
-                <div className="w-72">
+                <div className="w-60 lg:w-72 ">
                   <Slider {...settings}>
                     {a.images.map((img) => (
                       <div
@@ -317,7 +320,7 @@ export default function RequestedProductsPage() {
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel onClick={()=>setcategoryId(null)}>Cancel</AlertDialogCancel>
-                        <Button onClick={() => addtheProduct(a.id)}>
+                        <Button onClick={() => addtheProduct(a.id,a.name,a.price,a.description,a.email)}>
                         {submitLoading ? (
                             <div className="flex items-center gap-3">
                               <Loader2 className="animate-spin" />
@@ -349,7 +352,7 @@ export default function RequestedProductsPage() {
 
                         <Button
                           variant={"destructive"}
-                          onClick={() => removeProduct(a.id)}
+                          onClick={() => removeProduct(a.id,a.email)}
                           disabled={deleteLoading}
                         >
                           {deleteLoading ? (
