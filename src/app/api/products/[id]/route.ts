@@ -5,6 +5,17 @@ import { NextRequest, NextResponse } from "next/server";
 
 
 
+const corsHeaders = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+};
+
+export async function OPTIONS() {
+    return NextResponse.json({}, { headers: corsHeaders });
+}
+
+
 
 export async function GET(request: NextRequest, { params }: { params: { id: number } }) {
     try {
@@ -20,7 +31,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: numb
                 id: params.id
             }
         });
-        return NextResponse.json({ message: product }, { status: 200 })
+        return NextResponse.json({ message: product }, { headers:corsHeaders })
 
 
 
