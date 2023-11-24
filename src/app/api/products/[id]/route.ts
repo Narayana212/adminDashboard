@@ -5,6 +5,17 @@ import { NextRequest, NextResponse } from "next/server";
 
 
 
+const corsHeaders = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+};
+
+export async function OPTIONS() {
+    return NextResponse.json({}, { headers: corsHeaders });
+}
+
+
 
 export async function GET(request: NextRequest, { params }: { params: { id: number } }) {
     try {
@@ -20,7 +31,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: numb
                 id: params.id
             }
         });
-        return NextResponse.json({ message: product }, { status: 200 })
+        return NextResponse.json({ message: product }, {headers:corsHeaders})
 
 
 
@@ -28,6 +39,43 @@ export async function GET(request: NextRequest, { params }: { params: { id: numb
         console.log(error.message)
         NextResponse.json({ "message": error.message }, { status: 500 })
 
+    }
+}
+
+
+
+export async function PUT(request: NextRequest, { params }: { params: { id: number } }){
+    try {
+        const { userId } = getAuth(request);
+        if (!userId) {
+            return NextResponse.json({ message: "Unauthorized User" }, { status: 401 });
+        }
+        if(!isAdmin(userId)){
+            return NextResponse.json({message:"Only Admin can Edit"},{status:400})
+        }
+        if (!params.id) {
+            return NextResponse.json({ message: "Invalid product" }, { status: 400 });
+        }
+
+        let id =params.id
+        if(typeof params.id === "string"){
+             id = parseInt(params.id)
+        }
+
+        await prisma.product.update({
+            where:{
+                id
+            },
+            data:{
+                isOrdered:true
+            }
+        })
+
+        return NextResponse.json({ message: "Product updated Successfully" }, {headers:corsHeaders});
+
+        
+    } catch (error) {
+        
     }
 }
 

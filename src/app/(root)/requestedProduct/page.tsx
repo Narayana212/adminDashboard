@@ -148,6 +148,7 @@ export default function RequestedProductsPage() {
         method: "Delete",
       });
       const data = await response.json();
+      console.log(data)
       if (response.ok) {
         setData(data.message);
         sendRejectedEmail(email)
