@@ -46,13 +46,8 @@ export async function GET(request: NextRequest, { params }: { params: { id: numb
 
 export async function PUT(request: NextRequest, { params }: { params: { id: number } }){
     try {
-        const { userId } = getAuth(request);
-        if (!userId) {
-            return NextResponse.json({ message: "Unauthorized User" }, { status: 401 });
-        }
-        if(!isAdmin(userId)){
-            return NextResponse.json({message:"Only Admin can Edit"},{status:400})
-        }
+        console.log("Put")
+        console.log(params.id)
         if (!params.id) {
             return NextResponse.json({ message: "Invalid product" }, { status: 400 });
         }
@@ -62,6 +57,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: numb
              id = parseInt(params.id)
         }
 
+        console.log("query")
         await prisma.product.update({
             where:{
                 id
@@ -74,7 +70,9 @@ export async function PUT(request: NextRequest, { params }: { params: { id: numb
         return NextResponse.json({ message: "Product updated Successfully" }, {headers:corsHeaders});
 
         
-    } catch (error) {
+    } catch (error:any) {
+        console.error(error.message);
+        return NextResponse.json({ message: error.message }, { status: 500 });
         
     }
 }
