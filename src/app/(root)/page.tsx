@@ -1,23 +1,16 @@
-"use client"
 import Heading from "@/components/ui/heading";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { productOrders } from "@/mock/product-order";
-import {DashBoardLineChart} from "@/components/dashboard-linechart";
 import { isAdmin } from "@/lib/admin";
-import { useAuth } from "@clerk/nextjs";
+import { auth} from "@clerk/nextjs";
 import { redirect } from "next/navigation";
+import ProductCard from "@/components/product-card";
+import OrderCard from "@/components/order-card";
+import RequestedCard from "@/components/requested-card";
+import SalesCard from "@/components/revene-card";
 
 
 export default function Home() {
 
-  const {userId}=useAuth()
-  
-  console.log(isAdmin(userId))
+  const { userId } = auth();
 
   if(!isAdmin(userId)){
     
@@ -31,17 +24,14 @@ export default function Home() {
       </div>
       <hr className="mt-5" />
       <div className="w-full flex pt-5 items-center flex-wrap gap-y-5 justify-evenly">
-        {productOrders.map((card) => (
-          <Card key={card.id} className="w-[200px] h-[100px]">
-            <CardHeader>
-              <CardTitle>{card.title}</CardTitle>
-              <CardDescription>{card.description}</CardDescription>
-            </CardHeader>
-          </Card>
-        ))}
+        
+          <ProductCard/>
+          <OrderCard/>
+          <RequestedCard/>
+          <SalesCard/>
+
+      
       </div>
-      <hr className="mt-5" />
-      <DashBoardLineChart />
     </div>
   );
 }

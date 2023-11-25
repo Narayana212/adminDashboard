@@ -4,6 +4,7 @@ import Plunk from "@plunk/node";
 
 const plunk = new Plunk(process.env.PLUNK_API_KEY);
 export const sendAcceptedEmail = async (name,price,description,email) => {
+  console.log(email,"mail")
   const response = await plunk.emails.send({
     to: email,
     subject: "Your SNX Order Has Been Accepted",
@@ -11,7 +12,7 @@ export const sendAcceptedEmail = async (name,price,description,email) => {
     Hello,
     <hr style="width: 0px;">
     
-    We're excited to inform you that your recent product with SNX has been successfully accepted!
+    We are excited to inform you that your recent product with SNX has been successfully accepted!
 Thank you for choosing SNX for your shopping needs. 
 Happy shopping!
 
@@ -24,5 +25,5 @@ Happy shopping!
 
   });
 
-  console.log(response)
+  console.log(response,"jo")
 };
