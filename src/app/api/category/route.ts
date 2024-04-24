@@ -53,7 +53,9 @@ export async function POST(request: NextRequest) {
                 name: category
             }
         })
-        const data = await prisma.productCategory.findMany()
+        // await connection.query('INSERT INTO product_categories (name) VALUES (?)', [category]);
+        const data = await prisma.productCategory.findMany({})
+        //select * from product_categories
         return NextResponse.json({ message: data }, { status: 200 })
 
     } catch (error: any) {

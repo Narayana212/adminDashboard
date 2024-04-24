@@ -71,6 +71,10 @@ export async function POST(request: NextRequest) {
             },
         },);
 
+
+
+
+
         if( id){
             const product = await prisma.requestedProduct.findUnique({
                 where: {
@@ -80,6 +84,8 @@ export async function POST(request: NextRequest) {
                     images: true,
                 },
             });
+
+            
             if (!product) {
                 return NextResponse.json({ message: "Product not found" }, { status: 404 });
             }
