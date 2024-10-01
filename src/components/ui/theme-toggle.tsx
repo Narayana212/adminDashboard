@@ -12,7 +12,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-export function ThemeToggle() {
+```
+/**
+ * ThemeToggle component for switching between light, dark, and system themes
+ * @returns {JSX.Element} A dropdown menu with theme options
+ */
+
+```export function ThemeToggle() {
   const { setTheme } = useTheme()
 
   return (
@@ -25,9 +31,24 @@ export function ThemeToggle() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
+        /**
+         * Sets the theme to light mode.
+         * @param {Function} onClick - The function to be called when the menu item is clicked.
+         * @returns {JSX.Element} A DropdownMenuItem component that changes the theme to light mode when clicked.
+         */
         <DropdownMenuItem onClick={() => setTheme("light")}>
           Light
         </DropdownMenuItem>
+        /**
+         * Sets the theme to dark mode
+         * @param {void} - This function doesn't take any parameters
+         /**
+          * Sets the theme to system default
+          * @param {void} - No parameters
+          * @returns {void} This function doesn't return a value
+          */
+         * @returns {void} This function doesn't return a value
+         */
         <DropdownMenuItem onClick={() => setTheme("dark")}>
           Dark
         </DropdownMenuItem>
